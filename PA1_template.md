@@ -1,16 +1,8 @@
----
-title: "PA1_template"
-author: "John Sullivan"
-date: "September 24, 2017"
-output:
-  html_document: 
-    keep_md: yes
-  pdf_document: default
----
+# PA1_template
+John Sullivan  
+September 24, 2017  
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Library Initialization plus loading and preprocessing the data
 
@@ -24,23 +16,44 @@ The variables included in the Activity Monitoring dataset are:
 
 The code:
 
-```{r load}
+
+```r
 # Libraries
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(lattice)
 
 # Unzip the data
 unzip ("./activity.zip", exdir = ".")
 # Read the data
 activity_data <- read.csv("./activity.csv")
-
 ```
 
 ## What is mean total number of steps taken per day?
 
 Next, we'll find the daily average and create a histogram of the frequency.
 
-```{r steps_taken}
+
+```r
 # Summarize by day
 activity_daily <- activity_data %>%
     ## Group by day
@@ -64,18 +77,18 @@ median_steps_fmt <-format(median_steps, nsmall=2, decimal.mark=".",
 # Add additional chart annotation with mean
 abline (v = mean_steps, col="blue", lwd=2,lty="dotted")
 text (x=(mean_steps + 300), y=12,"mean",adj = c(0,0))
-
-
 ```
 
-Also, it turns out that the median daily step count is `r median_steps_fmt` while the mean daily step count is `r mean_steps_fmt`.
+![](PA1_template_files/figure-html/steps_taken-1.png)<!-- -->
+
+Also, it turns out that the median daily step count is 10,765 while the mean daily step count is 10,766.19.
 
 ## What is the average daily activity pattern?
 
 Next, we're going to make a time series of the average for each 5-minute interval.
 
-```{r interval_average}
 
+```r
 # Summarize the average daily steps per interval
 activity_interval <- activity_data %>%
     ## Group by day
@@ -94,17 +107,19 @@ max_interval <- as.numeric(max_interval_table[1,1])
 max_interval_steps <- format(as.numeric(max_interval_table[1,2]),nsmall=2)
 
 abline (v = max_interval, col="green", lwd=2,lty="dotted")
-
 ```
 
-The interval with an maximum average step count of `r max_interval_steps` is `r max_interval`.
+![](PA1_template_files/figure-html/interval_average-1.png)<!-- -->
+
+The interval with an maximum average step count of 206.1698 is 835.
 
 
 ## Imputing missing values
 
 The next set of code imputes the missing values.   If a value is missing, then the average for that interval where the values are known is substituted.
 
-```{r impute_missings}
+
+```r
 # Impute missing intervals from average of entire data set
 activity_data_imp <- activity_data %>%
     ## Join in the average per interval
@@ -117,7 +132,8 @@ activity_data_imp <- activity_data %>%
 
 And then we'll group by days and create another histogram.
 
-```{r imputed_histogram}
+
+```r
 # Create a second daily grouping with imputed data
 activity_daily_2 <- activity_data_imp %>%
     ## Group by day
@@ -140,11 +156,12 @@ median_steps_2_fmt <-format(median_steps_2, nsmall=2, decimal.mark=".",
 # Add line for mean and label
 abline (v = mean_steps_2, col="blue", lwd=2,lty="dotted")
 text (x=(mean_steps_2 + 300), y=12,"mean",adj = c(0,0))
-
 ```
 
-Median for the imputed was `r median_steps_2_fmt` vs. `r median_steps_fmt` for the non-imputed case.  
-Similarly, Mean for the imputed was `r mean_steps_2_fmt` vs. `r mean_steps_fmt` for the non-imputed case.  
+![](PA1_template_files/figure-html/imputed_histogram-1.png)<!-- -->
+
+Median for the imputed was 10,762 vs. 10,765 for the non-imputed case.  
+Similarly, Mean for the imputed was 10,765.64 vs. 10,766.19 for the non-imputed case.  
 
 The result is very similar.   The reason is that upon review of the data you will find that N/As populate mostly entire days, not specific intervals scattered within the days.   So if we set those N/As to the mean of the intervals, that entire day will have exact same number of steps as the mean.  Therefore, the mean won't change that much, though the bar representing the mean in the histogram increases by the count of N/A days...
 
@@ -152,8 +169,8 @@ The result is very similar.   The reason is that upon review of the data you wil
 
 Last, we use the weekday() function to split the data between weekends and weekdays and then plot the time series of one vs. the other.
 
-``` {r weekend_timeseries}
 
+```r
 # Add the day_type variable
 activity_data_imp_wkdy <- activity_data_imp %>%
     mutate(weekday = weekdays(as.Date(date))) %>%
@@ -171,6 +188,8 @@ xyplot (Interval_Steps ~ interval | day_type, data=activity_interval_wkdy, type=
         lwd=2, col.line="blue", ylab="Average Steps for Interval", xlab="5 Minute Interval",
         main="Step / Interval Time Series for Weekend vs. Weekdays",layout=c(1,2))
 ```
+
+![](PA1_template_files/figure-html/weekend_timeseries-1.png)<!-- -->
 
 We conclude that this particular person is more active during the weekends than weekdays - maybe s/he has a desk job during the week and then gets outdoors on the weekends?
 
