@@ -120,6 +120,9 @@ The next set of code imputes the missing values.   If a value is missing, then t
 
 
 ```r
+# How many missing values are there for the steps?
+missing_na <- sum(is.na(activity_data$steps))
+total_rows <- nrow(activity_data)
 # Impute missing intervals from average of entire data set
 activity_data_imp <- activity_data %>%
     ## Join in the average per interval
@@ -129,6 +132,8 @@ activity_data_imp <- activity_data %>%
     ## Drop the Interval_Steps
     select (-Interval_Steps)
 ```
+
+Out of 17568 values in the steps column, there were 2304 N/As.
 
 And then we'll group by days and create another histogram.
 

@@ -105,6 +105,9 @@ The interval with an maximum average step count of `r max_interval_steps` is `r 
 The next set of code imputes the missing values.   If a value is missing, then the average for that interval where the values are known is substituted.
 
 ```{r impute_missings}
+# How many missing values are there for the steps?
+missing_na <- sum(is.na(activity_data$steps))
+total_rows <- nrow(activity_data)
 # Impute missing intervals from average of entire data set
 activity_data_imp <- activity_data %>%
     ## Join in the average per interval
@@ -114,6 +117,8 @@ activity_data_imp <- activity_data %>%
     ## Drop the Interval_Steps
     select (-Interval_Steps)
 ```
+
+Out of `r total_rows` values in the steps column, there were `r missing_na` N/As.
 
 And then we'll group by days and create another histogram.
 

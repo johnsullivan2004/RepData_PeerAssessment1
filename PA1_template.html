@@ -205,7 +205,10 @@ abline (v = max_interval, col=&quot;green&quot;, lwd=2,lty=&quot;dotted&quot;)</
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
 <p>The next set of code imputes the missing values. If a value is missing, then the average for that interval where the values are known is substituted.</p>
-<pre class="r"><code># Impute missing intervals from average of entire data set
+<pre class="r"><code># How many missing values are there for the steps?
+missing_na &lt;- sum(is.na(activity_data$steps))
+total_rows &lt;- nrow(activity_data)
+# Impute missing intervals from average of entire data set
 activity_data_imp &lt;- activity_data %&gt;%
     ## Join in the average per interval
     left_join (activity_interval,by=&quot;interval&quot;) %&gt;%
@@ -213,6 +216,7 @@ activity_data_imp &lt;- activity_data %&gt;%
     mutate(steps = case_when(is.na(.$steps) ~ as.integer(round(.$Interval_Steps,0)), !is.na(.$steps) ~ .$steps, TRUE ~ 0L)) %&gt;%
     ## Drop the Interval_Steps
     select (-Interval_Steps)</code></pre>
+<p>Out of 17568 values in the steps column, there were 2304 N/As.</p>
 <p>And then we’ll group by days and create another histogram.</p>
 <pre class="r"><code># Create a second daily grouping with imputed data
 activity_daily_2 &lt;- activity_data_imp %&gt;%
